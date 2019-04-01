@@ -1,25 +1,45 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Infinte from './components/Infinite';
 import './App.css';
 
 class App extends Component {
+  state = { items: [], itemsLoading: true };
+
+  componentDidMount = () => {
+    let items = this.generateRandomNumbers(50);
+    this.setState(() => ({
+      items,
+      itemsLoading: false
+    }));
+  };
+
+  generateRandomNumbers = length => {
+    return Array.from({ length }, () => Math.floor(Math.random() * 100000));
+  };
+
+  fetchMore = () => {
+    this.setState(() => ({
+      itemsLoading: true
+    }));
+    console.log('called');
+    let items = this.generateRandomNumbers(50);
+    setTimeout(() => {
+      this.setState(prevState => ({
+        items: [...prevState.items, ...items],
+        itemsLoading: false
+      }));
+    }, 3000);
+  };
+
   render() {
+    const { items } = this.state;
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Infinte loading={this.state.itemsLoading} action={this.fetchMore}>
+          {items.map(item => (
+            <h2 key={item}>{item}</h2>
+          ))}
+        </Infinte>
       </div>
     );
   }
